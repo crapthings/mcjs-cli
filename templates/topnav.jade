@@ -1,0 +1,9 @@
+template(name='topnav')
+
+	ul
+
+		li
+			a(href='/') {{currentUser.username}}
+
+		li
+			a(href='#' onclick='Meteor.logout();') logout

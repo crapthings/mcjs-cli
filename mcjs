@@ -1,0 +1,122 @@
+#!/usr/bin/env node
+
+require('shelljs/global');
+
+var argv = require('minimist')(process.argv.slice(2));
+var mkdirp = require('mkdirp');
+
+var __rootDir = __dirname;
+
+var _ = require('lodash');
+
+var packages = [
+	'accounts-password',
+	'coffeescript',
+	'dalgard:jade',
+	'mquandalle:stylus',
+	'stevezhu:lodash',
+	'momentjs:moment',
+	'iron:router',
+	'zimme:active-route',
+	'matb33:collection-hooks',
+	'dburles:collection-helpers',
+	'aldeed:collection2',
+	'aldeed:autoform',
+	'manuel:viewmodel'
+]
+
+if (_.isEmpty(argv._)) {
+	console.log('mcjs create "project name"');
+	console.log('mcjs route "router name"');
+	return;
+}
+
+var cmd = argv._[0];
+var val = argv._[1];
+
+var __CLIENT__ = 'client'
+var __SERVER__ = 'server'
+var __TEMPLATES__ = 'client/templates';
+var __UI__ = 'client/templates/ui';
+var __HOME__ = 'client/templates/home';
+var __LOGIN__ = 'client/templates/login';
+
+if (cmd == 'create') {
+
+	rm('-rf', val); // remove later
+
+	exec(`meteor create ${val}`, function (code) {
+
+		if (code) return;
+
+		// cd to ...
+		cd(val);
+
+		rm('-f', '*');
+
+		mkdir('-p', 'client/compatibility', 'client/lib', 'client/templates', 'client/styles');
+		mkdir('-p', 'client/templates/ui', 'client/templates/home', 'client/templates/login');
+		mkdir('-p', 'server');
+		mkdir('-p', 'lib');
+		mkdir('-p', 'collections');
+
+		// add packages
+
+		'\n'.toEnd('.meteor/packages');
+
+		_.each(packages, function (p) {
+			p += '\n';
+			p.toEnd('.meteor/packages');
+		});
+
+		// add files
+
+		cat(`${__dirname}/templates/config.coffee`).toEnd(`${__CLIENT__}/config.coffee`);
+
+		cat(`${__dirname}/templates/layout.jade`).toEnd(`${__UI__}/layout.jade`);
+		cat(`${__dirname}/templates/topnav.jade`).toEnd(`${__UI__}/topnav.jade`);
+		cat(`${__dirname}/templates/sidenav.jade`).toEnd(`${__UI__}/sidenav.jade`);
+
+		cat(`${__dirname}/templates/devnav.jade`).toEnd(`${__UI__}/devnav.jade`);
+
+		cat(`${__dirname}/templates/home.router.coffee`).toEnd(`${__HOME__}/router.coffee`);
+		cat(`${__dirname}/templates/home.template.jade`).toEnd(`${__HOME__}/template.jade`);
+		cat(`${__dirname}/templates/home.template.coffee`).toEnd(`${__HOME__}/template.coffee`);
+
+		cat(`${__dirname}/templates/login.router.coffee`).toEnd(`${__LOGIN__}/router.coffee`);
+		cat(`${__dirname}/templates/login.template.jade`).toEnd(`${__LOGIN__}/template.jade`);
+		cat(`${__dirname}/templates/login.template.coffee`).toEnd(`${__LOGIN__}/template.coffee`);
+
+		cat(`${__dirname}/templates/fixtures.coffee`).toEnd(`${__SERVER__}/fixtures.coffee`);
+
+		// replace placeholder
+
+		var sedList = ls('-R', 'client/templates/*.jade', 'client/templates/*.coffee');
+
+		_.each(sedList, function (file) {
+			sed('-i', '__PLACEHOLDER__', val, file);
+		});
+
+	});
+
+}
+
+if (cmd == 'route') {
+
+	var __ROUTE__ = `${__TEMPLATES__}/${val}`
+
+	mkdir('-p', __ROUTE__);
+
+	cat(`${__dirname}/templates/router.coffee`).toEnd(`${__ROUTE__}/router.coffee`);
+	cat(`${__dirname}/templates/template.jade`).toEnd(`${__ROUTE__}/template.jade`);
+	cat(`${__dirname}/templates/template.coffee`).toEnd(`${__ROUTE__}/template.coffee`);
+
+	`\n\t\tli\n\t\t\ta(href='{{pathFor route="__PLACEHOLDER__"}}') __PLACEHOLDER__\n`.toEnd(`${__UI__}/devnav.jade`)
+
+	var sedList = ls('-R', `${__ROUTE__}/*.jade`, `${__ROUTE__}/*.coffee`, `${__UI__}/devnav.jade`);
+
+	_.each(sedList, function (file) {
+		sed('-i', /__PLACEHOLDER__/g, val, file);
+	});
+
+}
