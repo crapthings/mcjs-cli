@@ -41,6 +41,7 @@ var val = argv._[1];
 var __CLIENT__ = 'client'
 var __SERVER__ = 'server'
 var __TEMPLATES__ = 'client/templates';
+var __COMPATIBILITY__ = 'client/compatibility';
 var __UI__ = 'client/templates/ui';
 var __HOME__ = 'client/templates/home';
 var __LOGIN__ = 'client/templates/login';
@@ -63,6 +64,8 @@ if (cmd == 'create') {
 		mkdir('-p', 'server');
 		mkdir('-p', 'lib');
 		mkdir('-p', 'collections');
+
+		cp(`${__dirname}/vendors/form2js.js`, __COMPATIBILITY__);
 
 		// add packages
 
