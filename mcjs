@@ -2,12 +2,13 @@
 
 require('shelljs/global');
 
-var argv = require('minimist')(process.argv.slice(2));
+const argv = require('minimist')(process.argv.slice(2));
 
-var _ = require('lodash');
+const _ = require('lodash');
 
-var packages = [
+const packages = [
 	'accounts-password',
+	'random',
 
 	'coffeescript',
 	'dalgard:jade',
@@ -26,7 +27,9 @@ var packages = [
 	'aldeed:collection2',
 	'aldeed:autoform',
 
-	'vsivsi:file-collection'
+	'vsivsi:file-collection',
+
+	'twbs:bootstrap'
 ]
 
 if (_.isEmpty(argv._)) {
@@ -35,16 +38,16 @@ if (_.isEmpty(argv._)) {
 	return;
 }
 
-var cmd = argv._[0];
-var val = argv._[1];
+const cmd = argv._[0];
+const val = argv._[1];
 
-var __CLIENT__ = 'client'
-var __SERVER__ = 'server'
-var __TEMPLATES__ = 'client/templates';
-var __COMPATIBILITY__ = 'client/compatibility';
-var __UI__ = 'client/templates/ui';
-var __HOME__ = 'client/templates/home';
-var __LOGIN__ = 'client/templates/login';
+const __CLIENT__ = 'client'
+const __SERVER__ = 'server'
+const __TEMPLATES__ = 'client/templates';
+const __COMPATIBILITY__ = 'client/compatibility';
+const __UI__ = 'client/templates/ui';
+const __HOME__ = 'client/templates/home';
+const __LOGIN__ = 'client/templates/login';
 
 if (cmd == 'create') {
 
@@ -64,6 +67,7 @@ if (cmd == 'create') {
 		mkdir('-p', 'server');
 		mkdir('-p', 'lib');
 		mkdir('-p', 'collections');
+		mkdir('-p', 'public');
 
 		cp(`${__dirname}/vendors/form2js.js`, __COMPATIBILITY__);
 
@@ -77,6 +81,8 @@ if (cmd == 'create') {
 		});
 
 		// add files
+
+		cat(`${__dirname}/templates/head.jade`).toEnd(`${__TEMPLATES__}/head.jade`);
 
 		cat(`${__dirname}/templates/config.coffee`).toEnd(`${__CLIENT__}/config.coffee`);
 
@@ -98,10 +104,10 @@ if (cmd == 'create') {
 
 		// replace placeholder
 
-		var sedList = ls('-R', 'client/templates/*.jade', 'client/templates/*.coffee');
+		let sedList = ls('-R', 'client/templates/*.jade', 'client/templates/*.coffee');
 
 		_.each(sedList, function (file) {
-			sed('-i', '__PLACEHOLDER__', val, file);
+			sed('-i', /__PLACEHOLDER__/g, val, file);
 		});
 
 	});
@@ -110,7 +116,7 @@ if (cmd == 'create') {
 
 if (cmd == 'route') {
 
-	var __ROUTE__ = `${__TEMPLATES__}/${val}`
+	let __ROUTE__ = `${__TEMPLATES__}/${val}`
 
 	mkdir('-p', __ROUTE__);
 
@@ -120,7 +126,7 @@ if (cmd == 'route') {
 
 	`\n\t\tli\n\t\t\ta(href='{{pathFor route="__PLACEHOLDER__"}}') __PLACEHOLDER__\n`.toEnd(`${__UI__}/devnav.jade`)
 
-	var sedList = ls('-R', `${__ROUTE__}/*.jade`, `${__ROUTE__}/*.coffee`, `${__UI__}/devnav.jade`);
+	let sedList = ls('-R', `${__ROUTE__}/*.jade`, `${__ROUTE__}/*.coffee`, `${__UI__}/devnav.jade`);
 
 	_.each(sedList, function (file) {
 		sed('-i', /__PLACEHOLDER__/g, val, file);
