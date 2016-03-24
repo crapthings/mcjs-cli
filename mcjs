@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict'
+
 require('shelljs/global');
 
 const argv = require('minimist')(process.argv.slice(2));
@@ -7,35 +9,35 @@ const argv = require('minimist')(process.argv.slice(2));
 const _ = require('lodash');
 
 const packages = [
-	'accounts-password',
-	'random',
+  'accounts-password',
+  'random',
 
-	'coffeescript',
-	'dalgard:jade',
-	'mquandalle:stylus',
+  'coffeescript',
+  'dalgard:jade',
+  'mquandalle:stylus',
 
-	'stevezhu:lodash',
-	'momentjs:moment',
+  'stevezhu:lodash',
+  'momentjs:moment',
 
-	'matb33:collection-hooks',
-	'dburles:collection-helpers',
+  'matb33:collection-hooks',
+  'dburles:collection-helpers',
 
-	'iron:router',
-	'zimme:active-route',
-	'manuel:viewmodel',
+  'iron:router',
+  'zimme:active-route',
+  'manuel:viewmodel',
 
-	'aldeed:collection2',
-	'aldeed:autoform',
+  'aldeed:collection2',
+  'aldeed:autoform',
 
-	'vsivsi:file-collection',
+  'vsivsi:file-collection',
 
-	'twbs:bootstrap'
+  'twbs:bootstrap'
 ]
 
 if (_.isEmpty(argv._)) {
-	console.log('mcjs create "project name"');
-	console.log('mcjs route "router name"');
-	return;
+  console.log('mcjs create "project name"');
+  console.log('mcjs route "router name"');
+  return;
 }
 
 const cmd = argv._[0];
@@ -51,85 +53,85 @@ const __LOGIN__ = 'client/templates/login';
 
 if (cmd == 'create') {
 
-	rm('-rf', val); // remove later
+  rm('-rf', val); // remove later
 
-	exec(`meteor create ${val}`, function (code) {
+  exec(`meteor create ${val}`, function (code) {
 
-		if (code) return;
+    if (code) return;
 
-		// cd to ...
-		cd(val);
+    // cd to ...
+    cd(val);
 
-		rm('-f', '*');
+    rm('-f', '*');
 
-		mkdir('-p', 'client/compatibility', 'client/lib', 'client/templates', 'client/styles');
-		mkdir('-p', 'client/templates/ui', 'client/templates/home', 'client/templates/login');
-		mkdir('-p', 'server');
-		mkdir('-p', 'lib');
-		mkdir('-p', 'collections');
-		mkdir('-p', 'public');
+    mkdir('-p', 'client/compatibility', 'client/lib', 'client/templates', 'client/styles');
+    mkdir('-p', 'client/templates/ui', 'client/templates/home', 'client/templates/login');
+    mkdir('-p', 'server');
+    mkdir('-p', 'lib');
+    mkdir('-p', 'collections');
+    mkdir('-p', 'public');
 
-		cp(`${__dirname}/vendors/form2js.js`, __COMPATIBILITY__);
+    cp(`${__dirname}/vendors/form2js.js`, __COMPATIBILITY__);
 
-		// add packages
+    // add packages
 
-		'\n'.toEnd('.meteor/packages');
+    '\n'.toEnd('.meteor/packages');
 
-		_.each(packages, function (p) {
-			p += '\n';
-			p.toEnd('.meteor/packages');
-		});
+    _.each(packages, function (p) {
+      p += '\n';
+      p.toEnd('.meteor/packages');
+    });
 
-		// add files
+    // add files
 
-		cat(`${__dirname}/templates/head.jade`).toEnd(`${__TEMPLATES__}/head.jade`);
+    cat(`${__dirname}/templates/head.jade`).toEnd(`${__TEMPLATES__}/head.jade`);
 
-		cat(`${__dirname}/templates/config.coffee`).toEnd(`${__CLIENT__}/config.coffee`);
+    cat(`${__dirname}/templates/config.coffee`).toEnd(`${__CLIENT__}/config.coffee`);
 
-		cat(`${__dirname}/templates/layout.jade`).toEnd(`${__UI__}/layout.jade`);
-		cat(`${__dirname}/templates/topnav.jade`).toEnd(`${__UI__}/topnav.jade`);
-		cat(`${__dirname}/templates/sidenav.jade`).toEnd(`${__UI__}/sidenav.jade`);
+    cat(`${__dirname}/templates/layout.jade`).toEnd(`${__UI__}/layout.jade`);
+    cat(`${__dirname}/templates/topnav.jade`).toEnd(`${__UI__}/topnav.jade`);
+    cat(`${__dirname}/templates/sidenav.jade`).toEnd(`${__UI__}/sidenav.jade`);
 
-		cat(`${__dirname}/templates/devnav.jade`).toEnd(`${__UI__}/devnav.jade`);
+    cat(`${__dirname}/templates/devnav.jade`).toEnd(`${__UI__}/devnav.jade`);
 
-		cat(`${__dirname}/templates/home.router.coffee`).toEnd(`${__HOME__}/router.coffee`);
-		cat(`${__dirname}/templates/home.template.jade`).toEnd(`${__HOME__}/template.jade`);
-		cat(`${__dirname}/templates/home.template.coffee`).toEnd(`${__HOME__}/template.coffee`);
+    cat(`${__dirname}/templates/home.router.coffee`).toEnd(`${__HOME__}/router.coffee`);
+    cat(`${__dirname}/templates/home.template.jade`).toEnd(`${__HOME__}/template.jade`);
+    cat(`${__dirname}/templates/home.template.coffee`).toEnd(`${__HOME__}/template.coffee`);
 
-		cat(`${__dirname}/templates/login.router.coffee`).toEnd(`${__LOGIN__}/router.coffee`);
-		cat(`${__dirname}/templates/login.template.jade`).toEnd(`${__LOGIN__}/template.jade`);
-		cat(`${__dirname}/templates/login.template.coffee`).toEnd(`${__LOGIN__}/template.coffee`);
+    cat(`${__dirname}/templates/login.router.coffee`).toEnd(`${__LOGIN__}/router.coffee`);
+    cat(`${__dirname}/templates/login.template.jade`).toEnd(`${__LOGIN__}/template.jade`);
+    cat(`${__dirname}/templates/login.template.coffee`).toEnd(`${__LOGIN__}/template.coffee`);
 
-		cat(`${__dirname}/templates/fixtures.coffee`).toEnd(`${__SERVER__}/fixtures.coffee`);
+    cat(`${__dirname}/templates/fixtures.coffee`).toEnd(`${__SERVER__}/fixtures.coffee`);
 
-		// replace placeholder
+    // replace placeholder
 
-		let sedList = ls('-R', 'client/templates/*.jade', 'client/templates/*.coffee');
+    let sedList = ls('-R', 'client/templates/*.jade', 'client/templates/*.coffee');
 
-		_.each(sedList, function (file) {
-			sed('-i', /__PLACEHOLDER__/g, val, file);
-		});
+    _.each(sedList, function (file) {
+      sed('-i', /__PLACEHOLDER__/g, val, file);
+    });
 
-	});
+  });
 
 }
 
 if (cmd == 'route') {
 
-	let __ROUTE__ = `${__TEMPLATES__}/${val}`
+  let __ROUTE__ = `${__TEMPLATES__}/${val}`
 
-	mkdir('-p', __ROUTE__);
+  mkdir('-p', __ROUTE__);
 
-	cat(`${__dirname}/templates/router.coffee`).toEnd(`${__ROUTE__}/router.coffee`);
-	cat(`${__dirname}/templates/template.jade`).toEnd(`${__ROUTE__}/template.jade`);
-	cat(`${__dirname}/templates/template.coffee`).toEnd(`${__ROUTE__}/template.coffee`);
+  cat(`${__dirname}/templates/router.coffee`).toEnd(`${__ROUTE__}/router.coffee`);
+  cat(`${__dirname}/templates/template.jade`).toEnd(`${__ROUTE__}/template.jade`);
+  cat(`${__dirname}/templates/template.coffee`).toEnd(`${__ROUTE__}/template.coffee`);
 
-	`\n\t\tli\n\t\t\ta(href='{{pathFor route="__PLACEHOLDER__"}}') __PLACEHOLDER__\n`.toEnd(`${__UI__}/devnav.jade`)
+  `\n\t\tli\n\t\t\ta(href='{{pathFor route="__PLACEHOLDER__"}}') __PLACEHOLDER__\n`.toEnd(`${__UI__}/devnav.jade`)
 
-	let sedList = ls('-R', `${__ROUTE__}/*.jade`, `${__ROUTE__}/*.coffee`, `${__UI__}/devnav.jade`);
+  let sedList = ls('-R', `${__ROUTE__}/*.jade`, `${__ROUTE__}/*.coffee`, `${__UI__}/devnav.jade`);
 
-	_.each(sedList, function (file) {
-		sed('-i', /__PLACEHOLDER__/g, val, file);
-	});
+  _.each(sedList, function (file) {
+    sed('-i', /__PLACEHOLDER__/g, val, file);
+  });
 
 }
