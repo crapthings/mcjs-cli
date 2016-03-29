@@ -1,0 +1,9 @@
+template(name='devnav')
+
+	ul
+
+		li
+			a(href='/') {{currentUser.username}}
+
+		li
+			a(href='{{pathFor route="home"}}') home

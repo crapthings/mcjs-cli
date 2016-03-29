@@ -31,7 +31,9 @@ const packages = [
 
   'vsivsi:file-collection',
 
-  'twbs:bootstrap'
+  'twbs:bootstrap',
+
+  'numtel:template-from-string'
 ]
 
 if (_.isEmpty(argv._)) {
@@ -60,9 +62,11 @@ if (cmd == 'create') {
     if (code) return;
 
     // cd to ...
-    cd(val);
+    cd(val + '/client');
 
     rm('-f', '*');
+
+    cd('..');
 
     mkdir('-p', 'client/compatibility', 'client/lib', 'client/templates', 'client/styles');
     mkdir('-p', 'client/templates/ui', 'client/templates/home', 'client/templates/login');
