@@ -48,6 +48,8 @@ const val = argv._[1];
 const __CLIENT__ = 'client'
 const __SERVER__ = 'server'
 const __TEMPLATES__ = 'client/templates';
+const __STYLES__ = 'client/styles';
+const __LIB__ = 'client/lib';
 const __COMPATIBILITY__ = 'client/compatibility';
 const __UI__ = 'client/templates/ui';
 const __HOME__ = 'client/templates/home';
@@ -59,10 +61,18 @@ if (cmd == 'create') {
 
   exec(`meteor create ${val}`, function (code) {
 
+    let projectRoot = pwd() + '/' + val
+
+    console.log(projectRoot);
+
     if (code) return;
 
     // cd to ...
     cd(val + '/client');
+
+    rm('-f', '*');
+
+    cd('../server');
 
     rm('-f', '*');
 
@@ -89,6 +99,8 @@ if (cmd == 'create') {
     // add files
 
     cat(`${__dirname}/templates/head.jade`).toEnd(`${__TEMPLATES__}/head.jade`);
+    cat(`${__dirname}/templates/screen.styl`).toEnd(`${__STYLES__}/screen.styl`);
+    cat(`${__dirname}/templates/helpers.coffee`).toEnd(`${__LIB__}/helpers.coffee`);
 
     cat(`${__dirname}/templates/config.coffee`).toEnd(`${__CLIENT__}/config.coffee`);
 

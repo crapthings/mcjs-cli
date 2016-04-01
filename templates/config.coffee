@@ -13,3 +13,7 @@ Router.onBeforeAction ->
 		@render 'login'
 	else
 		do @next
+
+#
+
+ViewModel.persist = false
