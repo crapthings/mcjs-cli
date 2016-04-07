@@ -35,7 +35,9 @@ const packages = [
 
   'numtel:template-from-string',
 
-  'raix:handlebar-helpers'
+  'raix:handlebar-helpers',
+
+  'reywood:publish-composite'
 ]
 
 if (_.isEmpty(argv._)) {
@@ -47,15 +49,24 @@ if (_.isEmpty(argv._)) {
 const cmd = argv._[0];
 const val = argv._[1];
 
-const __CLIENT__ = 'client'
-const __SERVER__ = 'server'
+const __CLIENT__ = 'client';
+const __COMPATIBILITY__ = 'client/compatibility';
+const __CLIENT_LIB__ = 'client/lib';
 const __TEMPLATES__ = 'client/templates';
 const __STYLES__ = 'client/styles';
-const __LIB__ = 'client/lib';
-const __COMPATIBILITY__ = 'client/compatibility';
+
 const __UI__ = 'client/templates/ui';
-const __HOME__ = 'client/templates/home';
 const __LOGIN__ = 'client/templates/login';
+const __HOME__ = 'client/templates/home';
+
+const __SERVER__ = 'server';
+
+const __IMPORTS__ = 'imports';
+const __LIB__ = 'lib';
+const __PUBLIC__ = 'public';
+const __PRIVATE__ = 'private';
+
+const __COLLECTIONS__ = 'collections';
 
 if (cmd == 'create') {
 
@@ -63,9 +74,9 @@ if (cmd == 'create') {
 
   exec(`meteor create ${val}`, function (code) {
 
-    let projectRoot = pwd() + '/' + val
+    // let projectRoot = pwd() + '/' + val
 
-    console.log(projectRoot);
+    // console.log(projectRoot);
 
     if (code) return;
 
@@ -83,9 +94,11 @@ if (cmd == 'create') {
     mkdir('-p', 'client/compatibility', 'client/lib', 'client/templates', 'client/styles');
     mkdir('-p', 'client/templates/ui', 'client/templates/home', 'client/templates/login');
     mkdir('-p', 'server');
+    mkdir('-p', 'imports')
     mkdir('-p', 'lib');
-    mkdir('-p', 'collections');
     mkdir('-p', 'public');
+    mkdir('-p', 'private');
+    mkdir('-p', 'collections');
 
     cp(`${__dirname}/vendors/form2js.js`, __COMPATIBILITY__);
 
@@ -102,7 +115,7 @@ if (cmd == 'create') {
 
     cat(`${__dirname}/templates/head.jade`).toEnd(`${__TEMPLATES__}/head.jade`);
     cat(`${__dirname}/templates/screen.styl`).toEnd(`${__STYLES__}/screen.styl`);
-    cat(`${__dirname}/templates/helpers.coffee`).toEnd(`${__LIB__}/helpers.coffee`);
+    cat(`${__dirname}/templates/helpers.coffee`).toEnd(`${__CLIENT_LIB__}/helpers.coffee`);
 
     cat(`${__dirname}/templates/config.coffee`).toEnd(`${__CLIENT__}/config.coffee`);
 
